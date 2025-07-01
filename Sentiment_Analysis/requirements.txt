@@ -1,0 +1,6 @@
+tweepy
+textblob
+nltk
+pandas
+matplotlib
+emoji 
