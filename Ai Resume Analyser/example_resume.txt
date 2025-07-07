@@ -1,0 +1,51 @@
+JOHN DOE
+Software Engineer
+john.doe@email.com | (555) 123-4567 | linkedin.com/in/johndoe
+
+PROFESSIONAL SUMMARY
+Experienced software engineer with 6 years of expertise in Python development, machine learning, and cloud technologies. Proven track record of delivering scalable solutions and leading technical projects.
+
+TECHNICAL SKILLS
+Programming Languages: Python, Java, JavaScript, SQL
+Machine Learning: scikit-learn, TensorFlow, pandas, numpy, matplotlib
+Cloud Platforms: AWS (EC2, S3, Lambda), Azure, Google Cloud Platform
+Databases: PostgreSQL, MongoDB, Redis
+DevOps: Docker, Kubernetes, Jenkins, Git
+Web Technologies: REST APIs, Flask, Django, React
+Other: Microservices, CI/CD, Agile methodologies
+
+PROFESSIONAL EXPERIENCE
+
+Senior Software Engineer | TechCorp Inc. | 2021 - Present
+• Led development of machine learning pipeline processing 1M+ records daily using Python and scikit-learn
+• Implemented microservices architecture using Docker and Kubernetes, improving deployment efficiency by 40%
+• Developed REST APIs serving 10,000+ concurrent users with 99.9% uptime
+• Mentored 3 junior developers and conducted code reviews for team of 8 engineers
+• Collaborated with data science team to deploy ML models to production using AWS SageMaker
+
+Software Engineer | DataFlow Solutions | 2019 - 2021
+• Built data analysis tools using pandas and matplotlib for business intelligence reporting
+• Developed automated testing framework reducing bug reports by 60%
+• Implemented CI/CD pipelines using Jenkins and Git, reducing deployment time by 50%
+• Created RESTful APIs using Flask and PostgreSQL for client applications
+• Participated in agile development processes and sprint planning
+
+Junior Developer | StartupXYZ | 2018 - 2019
+• Developed Python applications for data processing and analysis
+• Worked with AWS services including EC2, S3, and Lambda functions
+• Contributed to frontend development using React and JavaScript
+• Assisted in database design and optimization using MongoDB
+
+EDUCATION
+Bachelor of Science in Computer Science
+University of Technology | 2018
+
+CERTIFICATIONS
+• AWS Certified Developer Associate
+• Google Cloud Professional Data Engineer
+• Certified Kubernetes Administrator (CKA)
+
+PROJECTS
+• Built recommendation system using collaborative filtering and scikit-learn
+• Developed real-time data processing pipeline using Apache Kafka and Python
+• Created containerized microservices application using Docker and Kubernetes 

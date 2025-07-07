@@ -1,0 +1,12 @@
+# Core requirements for AI-Powered Resume Screener
+sentence-transformers>=2.2.2
+transformers>=4.28.0
+scikit-learn>=1.0.2
+numpy>=1.21.0
+torch>=1.10.0  # Required for most transformer models
+
+# Optional: For scalable vector search (not required for in-memory demo)
+# faiss-cpu>=1.7.3 
+
+PyPDF2
+python-docx
