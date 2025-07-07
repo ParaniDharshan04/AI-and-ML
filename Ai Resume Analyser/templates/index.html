@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Screener</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e3eafc 0%, #c1d3fe 100%);
+            min-height: 100vh;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            perspective: 1000px;
+        }
+        .main-container {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 20px 60px rgba(60, 80, 120, 0.15), 0 8px 32px rgba(60, 80, 120, 0.10);
+            border: 1px solid #e3eafc;
+            transform: translateZ(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .main-container:hover {
+            transform: translateZ(10px);
+            box-shadow: 0 25px 80px rgba(60, 80, 120, 0.20), 0 12px 40px rgba(60, 80, 120, 0.15);
+        }
+        .upload-area {
+            border: 2.5px dashed #3b82f6;
+            border-radius: 14px;
+            padding: 38px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #f6f8fc;
+            transform: translateZ(0);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.08);
+        }
+        .upload-area:hover {
+            border-color: #2563eb;
+            background: #eaf1fb;
+            transform: translateZ(5px) scale(1.02);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12);
+        }
+        .upload-area.dragover {
+            border-color: #22c55e;
+            background: #e0f7ef;
+            transform: translateZ(8px) scale(1.03);
+            box-shadow: 0 12px 32px rgba(34, 197, 94, 0.15);
+        }
+        .upload-area.border-danger {
+            border-color: #ef4444 !important;
+            background: #fef2f2;
+            transform: translateZ(5px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.12);
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+            border: none;
+            border-radius: 22px;
+            padding: 12px 32px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15), 0 2px 8px rgba(59, 130, 246, 0.08);
+            transform: translateZ(0);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
+            transform: translateY(-3px) translateZ(10px) scale(1.05);
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.25), 0 6px 18px rgba(59, 130, 246, 0.15);
+        }
+        .btn-primary:active {
+            transform: translateY(-1px) translateZ(5px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.20);
+        }
+        .form-control, .form-select {
+            border-radius: 9px;
+            border: 1.5px solid #dbeafe;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            transform: translateZ(0);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.05);
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.15rem rgba(59, 130, 246, 0.13), 0 4px 16px rgba(59, 130, 246, 0.08);
+            transform: translateZ(2px);
+        }
+        .loading {
+            display: none;
+        }
+        .result-container {
+            display: none;
+        }
+        .score-bar {
+            height: 28px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #e0e7ef;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: translateZ(0);
+        }
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #22c55e 0%, #3b82f6 100%);
+            transition: width 1s cubic-bezier(.4,2,.6,1);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+        }
+        .skill-badge {
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 18px;
+            margin: 5px 7px 5px 0;
+            display: inline-block;
+            font-size: 1em;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15), 0 2px 8px rgba(59, 130, 246, 0.08);
+            transform: translateZ(0);
+            transition: all 0.3s ease;
+        }
+        .skill-badge:hover {
+            transform: translateY(-2px) translateZ(5px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25), 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+        .assessment-card {
+            border-left: 4px solid #3b82f6;
+            background: #f8fafc;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.08), 0 2px 8px rgba(59, 130, 246, 0.05);
+            transform: translateZ(0);
+            transition: all 0.3s ease;
+        }
+        .assessment-card:hover {
+            transform: translateZ(5px) translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12), 0 4px 12px rgba(59, 130, 246, 0.08);
+        }
+        .card {
+            border-radius: 14px !important;
+            box-shadow: 0 8px 24px rgba(60, 80, 120, 0.10), 0 4px 12px rgba(60, 80, 120, 0.07);
+            border: 1px solid #e3eafc;
+            transform: translateZ(0);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card:hover {
+            transform: translateZ(8px) translateY(-3px);
+            box-shadow: 0 16px 40px rgba(60, 80, 120, 0.15), 0 8px 20px rgba(60, 80, 120, 0.10);
+        }
+        .card-title {
+            color: #2563eb;
+            font-weight: 600;
+        }
+        .text-primary {
+            color: #2563eb !important;
+        }
+        .text-success {
+            color: #22c55e !important;
+        }
+        .alert-success {
+            background: #e0f2fe;
+            color: #2563eb;
+            border: 1px solid #bae6fd;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+            transform: translateZ(0);
+            transition: all 0.3s ease;
+        }
+        .alert-success:hover {
+            transform: translateZ(3px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.12);
+        }
+        .alert-danger {
+            background: #fee2e2;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.08);
+            transform: translateZ(0);
+            transition: all 0.3s ease;
+        }
+        .alert-danger:hover {
+            transform: translateZ(3px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.12);
+        }
+        .display-4 {
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .lead {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="main-container p-5">
+                    <!-- Header -->
+                    <div class="text-center mb-5">
+                        <h1 class="display-4 fw-bold text-primary mb-3">
+                            <i class="fas fa-robot me-3"></i>AI Resume Screener
+                        </h1>
+                        <p class="lead text-muted">
+                            Upload a resume and job description to get AI-powered analysis and matching insights
+                        </p>
+                    </div>
+
+                    <!-- Upload Form -->
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="row">
+                            <!-- Job Description -->
+                            <div class="col-md-6 mb-4">
+                                <h4 class="mb-3">
+                                    <i class="fas fa-briefcase me-2"></i>Job Description
+                                </h4>
+                                <div class="form-group">
+                                    <label for="job_description" class="form-label">Paste the job description here:</label>
+                                    <textarea 
+                                        class="form-control" 
+                                        id="job_description" 
+                                        name="job_description" 
+                                        rows="8" 
+                                        placeholder="Enter the job description, requirements, and responsibilities..."
+                                        required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Resume Upload -->
+                            <div class="col-md-6 mb-4">
+                                <h4 class="mb-3">
+                                    <i class="fas fa-file-upload me-2"></i>Resume Upload
+                                </h4>
+                                <div class="upload-area" id="uploadArea">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                    <h5>Drag & Drop Resume Here</h5>
+                                    <p class="text-muted">or click to browse</p>
+                                    <input type="file" id="resume" name="resume" accept=".txt,.pdf,.doc,.docx" class="d-none">
+                                    <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('resume').click()">
+                                        <i class="fas fa-folder-open me-2"></i>Choose File
+                                    </button>
+                                    <div id="fileInfo" class="mt-3"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-magic me-2"></i>Analyze Resume
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Loading Section -->
+                    <div class="loading text-center py-5" id="loadingSection">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <h5>AI is analyzing your resume...</h5>
+                        <p class="text-muted">This may take a few moments</p>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div class="result-container" id="resultContainer">
+                        <div class="text-center mb-4">
+                            <h2 class="text-success">
+                                <i class="fas fa-chart-line me-2"></i>Analysis Complete!
+                            </h2>
+                        </div>
+
+                        <!-- Relevance Score -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-percentage me-2"></i>Relevance Score
+                                </h5>
+                                <div class="d-flex align-items-center mb-3">
+                                    <h2 class="text-primary mb-0 me-3" id="relevanceScore">0%</h2>
+                                    <div class="score-bar flex-grow-1">
+                                        <div class="score-fill" id="scoreFill" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-0">How well the candidate matches the job requirements</p>
+                            </div>
+                        </div>
+
+                        <!-- Matched Skills -->
+                        <div class="card mb-4" id="skillsCard" style="display: none;">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-check-circle me-2 text-success"></i>Matched Skills
+                                </h5>
+                                <div id="matchedSkills"></div>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Assessments -->
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-clipboard-list me-2"></i>Detailed Assessments
+                                </h5>
+                                <div id="assessments"></div>
+                            </div>
+                        </div>
+
+                        <!-- Download Results -->
+                        <div class="text-center mt-4">
+                            <button class="btn btn-outline-primary" onclick="downloadResults()">
+                                <i class="fas fa-download me-2"></i>Download Results
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentResultsFile = null;
+
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('resume');
+        const fileInfo = document.getElementById('fileInfo');
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateFileInfo(files[0]);
+            }
+        });
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                updateFileInfo(e.target.files[0]);
+            }
+        });
+
+        function updateFileInfo(file) {
+            fileInfo.innerHTML = `
+                <div class="alert alert-success">
+                    <i class="fas fa-file me-2"></i>
+                    <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB)
+                </div>
+            `;
+            uploadArea.classList.remove('border-danger');
+        }
+
+        function showFileRequired() {
+            fileInfo.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Resume file is required</strong>
+                </div>
+            `;
+            uploadArea.classList.add('border-danger');
+        }
+
+        // Form submission
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const resumeFile = fileInput.files[0];
+            const jobDescription = document.getElementById('job_description').value;
+
+            // Manual validation
+            if (!resumeFile) {
+                showFileRequired();
+                return;
+            }
+            
+            if (!jobDescription.trim()) {
+                alert('Please enter a job description.');
+                document.getElementById('job_description').focus();
+                return;
+            }
+
+            formData.append('resume', resumeFile);
+            formData.append('job_description', jobDescription);
+
+            // Show loading
+            document.getElementById('uploadForm').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('resultContainer').style.display = 'none';
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayResults(result);
+                    currentResultsFile = result.results_file;
+                } else {
+                    alert('Error: ' + result.error);
+                    resetForm();
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+                resetForm();
+            }
+        });
+
+        function displayResults(data) {
+            // Hide loading, show results
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'block';
+
+            // Update relevance score
+            document.getElementById('relevanceScore').textContent = data.structured_score + '%';
+            document.getElementById('scoreFill').style.width = data.structured_score + '%';
+
+            // Hide skills card (not used in structured report)
+            document.getElementById('skillsCard').style.display = 'none';
+
+            // Show structured report in assessments section
+            const assessments = document.getElementById('assessments');
+            assessments.innerHTML = data.structured_report;
+            
+            // Add additional information sections
+            const additionalInfo = `
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-file-alt me-2"></i>Resume Preview
+                        </h5>
+                        <div class="bg-light p-3 rounded">
+                            <pre style="white-space: pre-wrap; font-size: 0.9em; margin: 0;">${data.resume_preview}</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-briefcase me-2"></i>Job Description
+                        </h5>
+                        <div class="bg-light p-3 rounded">
+                            <pre style="white-space: pre-wrap; font-size: 0.9em; margin: 0;">${data.job_description}</pre>
+                        </div>
+                    </div>
+                </div>
+            `;
+            assessments.innerHTML += additionalInfo;
+        }
+
+        function resetForm() {
+            document.getElementById('uploadForm').style.display = 'block';
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'none';
+            document.getElementById('uploadForm').reset();
+            fileInfo.innerHTML = '';
+            uploadArea.classList.remove('border-danger');
+        }
+
+        function downloadResults() {
+            if (currentResultsFile) {
+                window.open(`/download/${currentResultsFile}`, '_blank');
+            }
+        }
+    </script>
+</body>
+</html> 
